@@ -5,6 +5,7 @@ import UserRequests from './pages/UserRequests';
 import UserManagement from './pages/UserManagement';
 import Login from './pages/Login';
 import Sidebar from './pages/Sidebar';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/Sidebar" element={<Sidebar />} />
         <Route path="/user-requests" element={<UserRequests />} />
         <Route path="/user-management" element={<UserManagement />} />
+        <Route path="/Profile" element={<Profile />} />
       </Routes>
     </Router>
     </>
