@@ -1,7 +1,6 @@
 import React from 'react';
 
 const Profile = () => {
-    // Simulating fetching the username of the logged-in user
     const username = "aniketgupta2312"; // Replace this with actual username fetching logic
 
     return (
@@ -16,7 +15,6 @@ const Profile = () => {
                     <h3 style={styles.label}>Email:</h3>
                     <p style={styles.value}>Aniiigupta23@gmail.com</p> {/* Replace with actual email fetching logic */}
                 </div>
-                {/* Add more user information as needed */}
             </div>
         </div>
     );

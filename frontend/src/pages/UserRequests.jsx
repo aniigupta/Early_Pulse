@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
 const UserRequests = () => {
-  const [requests, setRequests] = useState([]);  // To store user requests
-  const [loading, setLoading] = useState(true);  // To manage loading state
-  const [error, setError] = useState(null);  // To manage error state
+  const [requests, setRequests] = useState([]); 
+  const [loading, setLoading] = useState(true);  
+  const [error, setError] = useState(null);  
 
-  // Fetch user requests from the API
+ 
   useEffect(() => {
     const fetchRequests = async () => {
       try {
@@ -14,7 +14,7 @@ const UserRequests = () => {
           throw new Error('Failed to fetch user requests');
         }
         const data = await response.json();
-        setRequests(data); // Assuming this API returns an array of requests
+        setRequests(data); 
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -74,7 +74,7 @@ const UserRequests = () => {
   );
 };
 
-// Basic styles for the cards and buttons
+
 const styles = {
   cardList: {
     display: 'grid',

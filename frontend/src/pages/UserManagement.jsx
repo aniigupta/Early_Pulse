@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 
 const UserManagement = () => {
-  const [users, setUsers] = useState([]);  // To store the list of users
-  const [loading, setLoading] = useState(true);  // To manage the loading state
-  const [error, setError] = useState(null);  // To manage error state
+  const [users, setUsers] = useState([]);  
+  const [loading, setLoading] = useState(true);  
+  const [error, setError] = useState(null);  
 
-  // Fetch users from the API
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('https://jsonplaceholder.typicode.com/users'); // Example API
+        const response = await fetch('https://jsonplaceholder.typicode.com/users'); 
         if (!response.ok) {
           throw new Error('Failed to fetch users');
         }
