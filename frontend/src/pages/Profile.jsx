@@ -1,72 +1,142 @@
 import React from 'react';
+import styled from 'styled-components';
+
+const Container = styled.div`
+  padding: 2rem;
+  background: #f8fafc;
+`;
+
+const PageTitle = styled.h1`
+  font-size: 1.875rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 2rem;
+`;
+
+const ProfileCard = styled.div`
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+`;
+
+const ProfileHeader = styled.div`
+  background: linear-gradient(135deg, #4c669f 0%, #3b5998 100%);
+  padding: 3rem 2rem;
+  color: white;
+  text-align: center;
+`;
+
+const Avatar = styled.div`
+  width: 120px;
+  height: 120px;
+  background: #ffffff;
+  border-radius: 60px;
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: #4c669f;
+  border: 4px solid white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+`;
+
+const ProfileContent = styled.div`
+  padding: 2rem;
+`;
+
+const InfoSection = styled.div`
+  margin-bottom: 2rem;
+`;
+
+const InfoGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+`;
+
+const InfoItem = styled.div`
+  background: #f8fafc;
+  padding: 1.5rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  }
+`;
+
+const Label = styled.h3`
+  color: #64748b;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+`;
+
+const Value = styled.p`
+  color: #1e293b;
+  font-size: 1.125rem;
+  font-weight: 500;
+`;
 
 const Profile = () => {
-    const username = "aniketgupta2312"; // Replace this with actual username fetching logic
+  const userInfo = {
+    username: "aniketgupta2312",
+    email: "Aniiigupta23@gmail.com",
+    role: "Administrator",
+    joinDate: "January 2024",
+    lastActive: "Today",
+    status: "Active"
+  };
 
-    return (
-        <div style={styles.container}>
-            <h2 style={styles.heading}>User Profile</h2>
-            <div style={styles.card}>
-                <div style={styles.info}>
-                    <h3 style={styles.label}>Username:</h3>
-                    <p style={styles.value}>{username}</p>
-                </div>
-                <div style={styles.info}>
-                    <h3 style={styles.label}>Email:</h3>
-                    <p style={styles.value}>Aniiigupta23@gmail.com</p> {/* Replace with actual email fetching logic */}
-                </div>
-            </div>
-        </div>
-    );
-};
-
-const styles = {
-    container: {
-        padding: '20px',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        backgroundColor: '#f0f4f8',
-        borderRadius: '12px',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
-        margin: '20px',
-        maxWidth: '600px',
-        width: '100%',
-    },
-    heading: {
-        color: '#333',
-        marginBottom: '20px',
-        fontSize: '28px',
-        textAlign: 'center',
-    },
-    card: {
-        width: '100%',
-        backgroundColor: '#ffffff',
-        borderRadius: '12px',
-        padding: '20px',
-        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.15)',
-        transition: 'transform 0.3s, box-shadow 0.3s',
-        '&:hover': {
-            transform: 'scale(1.02)',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
-        },
-    },
-    info: {
-        marginBottom: '15px',
-    },
-    label: {
-        fontWeight: 'bold',
-        color: '#555',
-        fontSize: '16px',
-    },
-    value: {
-        color: '#333',
-        fontSize: '18px',
-        margin: '5px 0',
-        backgroundColor: '#f9f9f9',
-        padding: '10px',
-        borderRadius: '8px',
-    },
+  return (
+    <Container>
+      <PageTitle>Profile</PageTitle>
+      <ProfileCard>
+        <ProfileHeader>
+          <Avatar>{userInfo.username[0].toUpperCase()}</Avatar>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '0.5rem' }}>
+            {userInfo.username}
+          </h2>
+          <p style={{ opacity: '0.9' }}>{userInfo.role}</p>
+        </ProfileHeader>
+        
+        <ProfileContent>
+          <InfoSection>
+            <InfoGrid>
+              <InfoItem>
+                <Label>Email</Label>
+                <Value>{userInfo.email}</Value>
+              </InfoItem>
+              <InfoItem>
+                <Label>Username</Label>
+                <Value>{userInfo.username}</Value>
+              </InfoItem>
+              <InfoItem>
+                <Label>Join Date</Label>
+                <Value>{userInfo.joinDate}</Value>
+              </InfoItem>
+              <InfoItem>
+                <Label>Last Active</Label>
+                <Value>{userInfo.lastActive}</Value>
+              </InfoItem>
+              <InfoItem>
+                <Label>Status</Label>
+                <Value>{userInfo.status}</Value>
+              </InfoItem>
+              <InfoItem>
+                <Label>Role</Label>
+                <Value>{userInfo.role}</Value>
+              </InfoItem>
+            </InfoGrid>
+          </InfoSection>
+        </ProfileContent>
+      </ProfileCard>
+    </Container>
+  );
 };
 
 export default Profile;
