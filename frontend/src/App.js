@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Sidebar from './pages/Sidebar';
 import Profile from './pages/Profile';
 import styled from 'styled-components';
+import Dashboard from './pages/Dashboard';
 
 // Layout component for dashboard pages
 const DashboardLayout = styled.div`
@@ -20,7 +21,7 @@ const MainContent = styled.div`
   min-height: 100vh;
 `;
 
-// Protected Route component
+
 const ProtectedRoute = ({ children }) => {
   // You can add proper authentication check here
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
@@ -49,7 +50,7 @@ function App() {
         {/* Protected routes with dashboard layout */}
         <Route path="/dashboard" element={
           <ProtectedRoute>
-            <div>Dashboard Home</div>
+            <Dashboard/>
           </ProtectedRoute>
         } />
         

@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { auth } from './firebase';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 
 const Container = styled.div`
   display: flex;
+  align-items: center;
+  justify-content: center;
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 `;
@@ -47,7 +51,7 @@ const InputGroup = styled.div`
 `;
 
 const Input = styled.input`
-  width: 100%;
+  width: 90%;
   padding: 1rem;
   padding-left: 1rem;
   background: rgba(255, 255, 255, 0.9);
@@ -122,29 +126,34 @@ const Login = () => {
   const [focusedInput, setFocusedInput] = useState('');
   const navigate = useNavigate();
 
-  // In your Login.jsx file
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setError('');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
 
-  setTimeout(() => {
-    if (username === 'admin' && password === 'admin') {
-      // Set authentication state
-      localStorage.setItem('isAuthenticated', 'true');
-      navigate('/dashboard');
-    } else {
-      setError('Invalid credentials');
+    try {
+      if (isSignup) {
+        // Sign up the user
+        await createUserWithEmailAndPassword(auth, username, password);
+        navigate('/dashboard'); // Redirect to the dashboard or other appropriate page
+      } else {
+        // Log in the user
+        await signInWithEmailAndPassword(auth, username, password);
+        
+        navigate('/dashboard'); // Redirect to the dashboard or other appropriate page
+      }
+    } catch (err) {
+      setError(err.message); // Show error from Firebase
     }
     setLoading(false);
-  }, 1000);
-};
+  };
 
-// Add logout functionality to your Sidebar component:
-const handleLogout = () => {
-  localStorage.removeItem('isAuthenticated');
-  navigate('/');
-};
+ 
+  const handleLogout = () => {
+    auth.signOut();
+    localStorage.removeItem('isAuthenticated'); 
+    navigate('/');
+  };
 
   return (
     <Container>

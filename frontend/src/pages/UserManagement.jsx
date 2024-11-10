@@ -5,7 +5,7 @@ const UserManagement = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
-
+  const [editformData, setEditFormData] = useState({ name: '', email: '', phone: '' });
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -34,7 +34,22 @@ const UserManagement = () => {
       setUsers(users.filter(user => user.id !== userId));
     }
   };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setEditFormData(prevEditFormData => ({
+      ...prevEditFormData,
+      [name]: value
+    }));
+  };
 
+  const handleSave = () => {
+    // Update the user in the users list (for now, we'll only update locally)
+    setUsers(users.map(user => 
+      user.id === selectedUser.id ? { ...user, ...editformData } : user
+    ));
+    setEditFormData({ name: '', email: '', phone: '' });
+    setSelectedUser(null); // Close the modal
+  };
   if (loading) {
     return (
       <div style={styles.loadingContainer}>
@@ -122,7 +137,40 @@ const UserManagement = () => {
             >
               ×
             </button>
-            {/* Add edit form here */}
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Name:</label>
+              <input
+                type="text"
+                name="name"
+                value={editformData.name}
+                onChange={handleChange}
+                style={styles.input}
+              />
+            </div>
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Email:</label>
+              <input
+                type="email"
+                name="email"
+                value={editformData.email}
+                onChange={handleChange}
+                style={styles.input}
+              />
+            </div>
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Phone Number:</label>
+              <input
+                type="text"
+                name="phone"
+                value={editformData.phone}
+                onChange={handleChange}
+                style={styles.input}
+              />
+            </div>
+
+            <button onClick={handleSave} style={styles.saveButton}>
+              Save
+            </button>
           </div>
         </div>
       )}

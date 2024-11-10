@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import axios from 'axios';
 import styled from 'styled-components';
 import Sidebar from './Sidebar';
 import Profile from './Profile';
@@ -19,15 +20,25 @@ const MainContent = styled.div`
 `;
 
 const Dashboard = () => {
+
+  const [message,setMessage] = useState('');
+
+  useEffect(()=>{
+    handleTestApi();
+  },[])
+  const handleTestApi = async() => {
+    try{
+      const response = await axios.get(process.env.REACT_APP_BACKEND_URL+"/api/labs/test");
+      console.log(response.data);
+    }catch(e){
+      console.log("Test Api is not working,caught this error : ",e)
+    }
+  }
   return (
     <DashboardContainer>
       <Sidebar />
       <MainContent>
-        <Routes>
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/user-management" element={<UserManagement />} />
-          {/* Add other routes as needed */}
-        </Routes>
+        <h1>{message}</h1>
       </MainContent>
     </DashboardContainer>
   );
