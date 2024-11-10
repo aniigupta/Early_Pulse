@@ -84,7 +84,7 @@ const Value = styled.p`
 
 const Profile = () => {
   const userInfo = {
-    username: "aniketgupta2312",
+    Name: "Aniket Gupta",
     email: "Aniiigupta23@gmail.com",
     role: "Administrator",
     joinDate: "January 2024",
@@ -97,9 +97,9 @@ const Profile = () => {
       <PageTitle>Profile</PageTitle>
       <ProfileCard>
         <ProfileHeader>
-          <Avatar>{userInfo.username[0].toUpperCase()}</Avatar>
+          <Avatar>{userInfo.Name[0].toUpperCase()}</Avatar>
           <h2 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '0.5rem' }}>
-            {userInfo.username}
+            {userInfo.Name}
           </h2>
           <p style={{ opacity: '0.9' }}>{userInfo.role}</p>
         </ProfileHeader>
@@ -112,8 +112,8 @@ const Profile = () => {
                 <Value>{userInfo.email}</Value>
               </InfoItem>
               <InfoItem>
-                <Label>Username</Label>
-                <Value>{userInfo.username}</Value>
+                <Label>Name</Label>
+                <Value>{userInfo.Name}</Value>
               </InfoItem>
               <InfoItem>
                 <Label>Join Date</Label>
