@@ -5,7 +5,6 @@ import { auth } from './firebase';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { getFirestore, doc, setDoc } from "firebase/firestore";
 
-
 const Container = styled.div`
   display: flex;
   align-items: center;
@@ -55,7 +54,6 @@ const InputGroup = styled.div`
 const Input = styled.input`
   width: 90%;
   padding: 1rem;
-  padding-left: 1rem;
   background: rgba(255, 255, 255, 0.9);
   border: 2px solid ${props => props.focused ? '#4c669f' : '#e1e1e1'};
   border-radius: 12px;
@@ -84,7 +82,6 @@ const Button = styled.button`
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-top: 0.5rem;
 
   &:hover {
     transform: translateY(-2px);
@@ -93,7 +90,6 @@ const Button = styled.button`
 
   &:disabled {
     background: #9ca3af;
-    transform: none;
     cursor: not-allowed;
   }
 `;
@@ -104,7 +100,6 @@ const ToggleText = styled.p`
   margin-top: 1.5rem;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: color 0.3s ease;
 
   &:hover {
     color: #3b5998;
@@ -118,10 +113,14 @@ const ErrorMessage = styled.div`
   margin-top: 0.5rem;
   text-align: center;
 `;
+
 const db = getFirestore();
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [labId, setLabId] = useState('');
   const [isSignup, setIsSignup] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -135,54 +134,66 @@ const Login = () => {
 
     try {
       if (isSignup) {
-        // Sign up the user
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        // Save additional user data in the "admins" collection in Firestore
-
         const user = userCredential.user;
-        console.log(user);
         await setDoc(doc(db, "admins", user.uid), {
           email: user.email,
-          password:password,
-          name: "Default Name", 
-          labId: "Default LabId" 
+          password,
+          name,
+          labId,
         });
         navigate('/dashboard');
       } else {
-        // Log in the user
         await signInWithEmailAndPassword(auth, email, password);
         navigate('/dashboard');
       }
     } catch (err) {
-      setError(err.message); // Show error from Firebase
+      setError(err.message);
     }
     setLoading(false);
-  };
-
-
-  const handleLogout = () => {
-    auth.signOut();
-    localStorage.removeItem('isAuthenticated');
-    navigate('/');
   };
 
   return (
     <Container>
       <FormWrapper>
         <FormContainer>
-          <Logo>
-            {isSignup ? 'Create Account' : 'Welcome Back'}
-          </Logo>
+          <Logo>{isSignup ? 'Create Account' : 'Welcome Back'}</Logo>
           <Form onSubmit={handleSubmit}>
+            {isSignup && (
+              <>
+                <InputGroup>
+                  <Input
+                    type="text"
+                    placeholder="Name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    focused={focusedInput === 'name'}
+                    onFocus={() => setFocusedInput('name')}
+                    onBlur={() => setFocusedInput('')}
+                  />
+                </InputGroup>
+                <InputGroup>
+                  <Input
+                    type="text"
+                    placeholder="Lab ID"
+                    value={labId}
+                    onChange={(e) => setLabId(e.target.value)}
+                    focused={focusedInput === 'labId'}
+                    onFocus={() => setFocusedInput('labId')}
+                    onBlur={() => setFocusedInput('')}
+                  />
+                </InputGroup>
+              </>
+            )}
             <InputGroup>
               <Input
                 type="text"
-                placeholder="email"
+                placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                onFocus={() => setFocusedInput('username')}
+                focused={focusedInput === 'email'}
+                onFocus={() => setFocusedInput('email')}
                 onBlur={() => setFocusedInput('')}
-                focused={focusedInput === 'username'}
               />
             </InputGroup>
             <InputGroup>
@@ -191,9 +202,9 @@ const Login = () => {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                focused={focusedInput === 'password'}
                 onFocus={() => setFocusedInput('password')}
                 onBlur={() => setFocusedInput('')}
-                focused={focusedInput === 'password'}
               />
             </InputGroup>
             {error && <ErrorMessage>{error}</ErrorMessage>}
