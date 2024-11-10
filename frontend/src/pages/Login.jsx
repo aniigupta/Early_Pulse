@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { auth } from './firebase';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getFirestore, doc, setDoc } from "firebase/firestore";
+
 
 const Container = styled.div`
   display: flex;
@@ -116,9 +118,9 @@ const ErrorMessage = styled.div`
   margin-top: 0.5rem;
   text-align: center;
 `;
-
+const db = getFirestore();
 const Login = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSignup, setIsSignup] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -134,13 +136,22 @@ const Login = () => {
     try {
       if (isSignup) {
         // Sign up the user
-        await createUserWithEmailAndPassword(auth, username, password);
-        navigate('/dashboard'); // Redirect to the dashboard or other appropriate page
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        // Save additional user data in the "admins" collection in Firestore
+
+        const user = userCredential.user;
+        console.log(user);
+        await setDoc(doc(db, "admins", user.uid), {
+          email: user.email,
+          password:password,
+          name: "Default Name", 
+          labId: "Default LabId" 
+        });
+        navigate('/dashboard');
       } else {
         // Log in the user
-        await signInWithEmailAndPassword(auth, username, password);
-        
-        navigate('/dashboard'); // Redirect to the dashboard or other appropriate page
+        await signInWithEmailAndPassword(auth, email, password);
+        navigate('/dashboard');
       }
     } catch (err) {
       setError(err.message); // Show error from Firebase
@@ -148,10 +159,10 @@ const Login = () => {
     setLoading(false);
   };
 
- 
+
   const handleLogout = () => {
     auth.signOut();
-    localStorage.removeItem('isAuthenticated'); 
+    localStorage.removeItem('isAuthenticated');
     navigate('/');
   };
 
@@ -166,9 +177,9 @@ const Login = () => {
             <InputGroup>
               <Input
                 type="text"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                placeholder="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 onFocus={() => setFocusedInput('username')}
                 onBlur={() => setFocusedInput('')}
                 focused={focusedInput === 'username'}
