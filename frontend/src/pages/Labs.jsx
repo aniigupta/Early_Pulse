@@ -5,7 +5,11 @@ const AddLab = () => {
     const [labDetails, setLabDetails] = useState({
         name: '',
         description: '',
-        location: ''
+        location: '',
+        address: '',
+        contact: '',
+        price: '',
+        services: ''
     });
 
     const [message, setMessage] = useState('');
@@ -24,7 +28,15 @@ const AddLab = () => {
             const response = await axios.post('/api/labs', labDetails);
             if (response.status === 201) {
                 setMessage('Lab added successfully!');
-                setLabDetails({ name: '', description: '', location: '' }); 
+                setLabDetails({
+                    name: '',
+                    description: '',
+                    location: '',
+                    address: '',
+                    contact: '',
+                    price: '',
+                    services: ''
+                });
             } else {
                 setMessage('Failed to add lab.');
             }
@@ -70,6 +82,50 @@ const AddLab = () => {
                         required
                     />
                 </div>
+                <div style={styles.formGroup}>
+                    <label style={styles.label}>Address:</label>
+                    <input
+                        type="text"
+                        name="address"
+                        value={labDetails.address}
+                        onChange={handleChange}
+                        style={styles.input}
+                        required
+                    />
+                </div>
+                <div style={styles.formGroup}>
+                    <label style={styles.label}>Contact:</label>
+                    <input
+                        type="text"
+                        name="contact"
+                        value={labDetails.contact}
+                        onChange={handleChange}
+                        style={styles.input}
+                        required
+                    />
+                </div>
+                <div style={styles.formGroup}>
+                    <label style={styles.label}>Price:</label>
+                    <input
+                        type="number"
+                        name="price"
+                        value={labDetails.price}
+                        onChange={handleChange}
+                        style={styles.input}
+                        required
+                    />
+                </div>
+                <div style={styles.formGroup}>
+                    <label style={styles.label}>Services:</label>
+                    <input
+                        type="text"
+                        name="services"
+                        value={labDetails.services}
+                        onChange={handleChange}
+                        style={styles.input}
+                        required
+                    />
+                </div>
                 <button type="submit" style={styles.button}>Add Lab</button>
             </form>
             {message && <p style={styles.message}>{message}</p>}
@@ -79,60 +135,63 @@ const AddLab = () => {
 
 const styles = {
     container: {
-        maxWidth: '600px',
-        margin: '0 auto',
+        maxWidth: '90%',
+        margin: '20px auto',
         padding: '20px',
-        backgroundColor: '#f9f9f9',
-        borderRadius: '8px',
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+        backgroundColor: '#ffffff',
+        borderRadius: '10px',
+        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
     },
     title: {
         textAlign: 'center',
-        fontSize: '24px',
+        fontSize: '28px',
         marginBottom: '20px',
-        color: '#333',
+        color: '#444',
     },
     form: {
+        display: 'grid',
+        gap: '20px',
+    },
+    formGroup: {
         display: 'flex',
         flexDirection: 'column',
     },
-    formGroup: {
-        marginBottom: '15px',
-    },
     label: {
-        display: 'block',
-        fontSize: '14px',
+        fontSize: '16px',
         marginBottom: '5px',
         color: '#555',
+        fontWeight: 'bold',
     },
     input: {
-        width: '100%',
         padding: '10px',
-        fontSize: '14px',
+        fontSize: '16px',
         border: '1px solid #ddd',
-        borderRadius: '4px',
-        outline: 'none',
+        borderRadius: '5px',
+        transition: 'border-color 0.3s ease-in-out',
     },
     textarea: {
-        width: '100%',
         padding: '10px',
-        fontSize: '14px',
+        fontSize: '16px',
         border: '1px solid #ddd',
-        borderRadius: '4px',
+        borderRadius: '5px',
         resize: 'none',
-        height: '80px',
-        outline: 'none',
+        height: '100px',
+        transition: 'border-color 0.3s ease-in-out',
+    },
+    inputFocus: {
+        borderColor: '#007BFF',
     },
     button: {
-        padding: '10px 20px',
-        fontSize: '16px',
+        padding: '12px 20px',
+        fontSize: '18px',
         fontWeight: 'bold',
         color: '#fff',
         backgroundColor: '#007BFF',
         border: 'none',
-        borderRadius: '4px',
+        borderRadius: '5px',
         cursor: 'pointer',
-        transition: 'background-color 0.3s',
+        transition: 'background-color 0.3s ease-in-out',
+        textAlign: 'center',
     },
     buttonHover: {
         backgroundColor: '#0056b3',
@@ -141,7 +200,16 @@ const styles = {
         textAlign: 'center',
         marginTop: '20px',
         color: '#28a745',
-        fontSize: '16px',
+        fontSize: '18px',
+        fontWeight: 'bold',
+    },
+    '@media (max-width: 768px)': {
+        form: {
+            gap: '15px',
+        },
+        title: {
+            fontSize: '24px',
+        },
     },
 };
 
