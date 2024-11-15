@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FaUser, FaUserPlus, FaUsers, FaTachometerAlt, FaSignOutAlt } from 'react-icons/fa';
+import { FaUser, FaUserPlus, FaUsers, FaTachometerAlt, FaSignOutAlt, FaFlask } from 'react-icons/fa';
 import styled from 'styled-components';
 
 const SidebarContainer = styled.div`
@@ -68,12 +68,6 @@ const Divider = styled.div`
   margin: 1rem 0;
 `;
 
-const UserSection = styled.div`
-  padding: 1rem;
-  margin-top: auto;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-`;
-
 const Sidebar = () => {
   const location = useLocation();
   const [activeItem, setActiveItem] = useState(location.pathname);
@@ -83,6 +77,7 @@ const Sidebar = () => {
     { path: '/profile', icon: FaUser, text: 'Profile' },
     { path: '/user-requests', icon: FaUserPlus, text: 'New User Requests' },
     { path: '/user-management', icon: FaUsers, text: 'Total Users' },
+    { path: '/labs', icon: FaFlask, text: 'Labs' },  
   ];
 
   return (

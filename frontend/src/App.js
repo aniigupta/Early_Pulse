@@ -7,8 +7,8 @@ import Sidebar from './pages/Sidebar';
 import Profile from './pages/Profile';
 import styled from 'styled-components';
 import Dashboard from './pages/Dashboard';
+import Labs from './pages/Labs';
 
-// Layout component for dashboard pages
 const DashboardLayout = styled.div`
   display: flex;
   min-height: 100vh;
@@ -23,9 +23,8 @@ const MainContent = styled.div`
 
 
 const ProtectedRoute = ({ children }) => {
-  // You can add proper authentication check here
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-  
+
   if (!isAuthenticated) {
     return <Navigate to="/" replace />;
   }
@@ -44,35 +43,35 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Public route */}
         <Route path="/" element={<Login />} />
-        
-        {/* Protected routes with dashboard layout */}
         <Route path="/dashboard" element={
           <ProtectedRoute>
-            <Dashboard/>
+            <Dashboard />
           </ProtectedRoute>
         } />
-        
         <Route path="/profile" element={
           <ProtectedRoute>
             <Profile />
           </ProtectedRoute>
         } />
-        
+
         <Route path="/user-requests" element={
           <ProtectedRoute>
             <UserRequests />
           </ProtectedRoute>
         } />
-        
+
         <Route path="/user-management" element={
           <ProtectedRoute>
             <UserManagement />
           </ProtectedRoute>
+        }
+        />
+        <Route path="/labs" element={
+          <ProtectedRoute>
+            <Labs />
+          </ProtectedRoute>
         } />
-
-        {/* Redirect unmatched routes to dashboard */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </Router>
