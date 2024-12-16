@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Sidebar from './Sidebar';
-import { useUser } from './UserContext'; 
 
 const DashboardContainer = styled.div`
   display: flex;
@@ -17,7 +16,6 @@ const MainContent = styled.div`
 
 const Dashboard = () => {
   const [message, setMessage] = useState('');
-  const { user, loading } = useUser(); 
 
   useEffect(() => {
     setMessage('Welcome to the ADMIN Dashboard!');
@@ -28,16 +26,6 @@ const Dashboard = () => {
       <Sidebar />
       <MainContent>
         <h1>{message}</h1>
-        {loading ? (
-          <p>Loading user data...</p>
-        ) : user ? (
-          <div>
-            <h2>User Details:</h2>
-            <pre>{JSON.stringify(user, null, 2)}</pre> {/* Pretty print user details */}
-          </div>
-        ) : (
-          <p>No user data available.</p>
-        )}
       </MainContent>
     </DashboardContainer>
   );

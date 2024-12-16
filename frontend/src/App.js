@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard';
 import Labs from './pages/Labs';
 import styled from 'styled-components';
 import { UserProvider } from './pages/UserContext';
+import axios from 'axios';
 
 const DashboardLayout = styled.div`
   display: flex;

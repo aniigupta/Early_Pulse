@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { auth } from './firebase';
@@ -142,8 +142,16 @@ const Login = () => {
   const [error, setError] = useState('');
   const [focusedInput, setFocusedInput] = useState('');
   const { setUser } = useUser();
+  const { user } = useUser ();
   const db = getFirestore();
   const navigate = useNavigate();
+
+
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard'); // Redirect to dashboard if user is logged in
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -27,7 +27,7 @@ const UserRequests = ({ labId, onUserApproved }) => {
     };
 
     fetchRequests();
-  }, [labId]);
+  }, [user.labId]);
 
   const handleApprove = (id) => {
     const request = requests.find((req) => req.id === id);
