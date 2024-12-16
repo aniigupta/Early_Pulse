@@ -4,8 +4,8 @@ import axios from 'axios';
 const AddLab = () => {
     const [labDetails, setLabDetails] = useState({
         name: '',
-        description: '',
-        location: '',
+        // description: '',
+        // location: '',
         address: '',
         contact: '',
         price: '',
@@ -24,14 +24,13 @@ const AddLab = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log('Submitting lab details:', labDetails);
         try {
-            const response = await axios.post('/api/labs', labDetails);
+            const response = await axios.post('http://localhost:8081/api/labs', labDetails);
             if (response.status === 201) {
                 setMessage('Lab added successfully!');
                 setLabDetails({
                     name: '',
-                    description: '',
-                    location: '',
                     address: '',
                     contact: '',
                     price: '',
@@ -56,27 +55,6 @@ const AddLab = () => {
                         type="text"
                         name="name"
                         value={labDetails.name}
-                        onChange={handleChange}
-                        style={styles.input}
-                        required
-                    />
-                </div>
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>Description:</label>
-                    <textarea
-                        name="description"
-                        value={labDetails.description}
-                        onChange={handleChange}
-                        style={styles.textarea}
-                        required
-                    ></textarea>
-                </div>
-                <div style={styles.formGroup}>
-                    <label style={styles.label}>Location:</label>
-                    <input
-                        type="text"
-                        name="location"
-                        value={labDetails.location}
                         onChange={handleChange}
                         style={styles.input}
                         required

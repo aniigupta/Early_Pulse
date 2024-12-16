@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import axios from 'axios';
 import styled from 'styled-components';
 import Sidebar from './Sidebar';
-import Profile from './Profile';
-import UserManagement from './UserManagement';
-import Login from './Login';
+import { useUser } from './UserContext'; 
 
 const DashboardContainer = styled.div`
   display: flex;
-  min-height: 100vh;
+  min-height 100vh;
 `;
 
 const MainContent = styled.div`
@@ -20,25 +16,28 @@ const MainContent = styled.div`
 `;
 
 const Dashboard = () => {
+  const [message, setMessage] = useState('');
+  const { user, loading } = useUser(); 
 
-  const [message,setMessage] = useState('');
+  useEffect(() => {
+    setMessage('Welcome to the ADMIN Dashboard!');
+  }, []);
 
-  useEffect(()=>{
-    handleTestApi();
-  },[])
-  const handleTestApi = async() => {
-    try{
-      const response = await axios.get(process.env.REACT_APP_BACKEND_URL+"/api/labs/test");
-      console.log(response.data);
-    }catch(e){
-      console.log("Test Api is not working,caught this error : ",e)
-    }
-  }
   return (
     <DashboardContainer>
       <Sidebar />
       <MainContent>
         <h1>{message}</h1>
+        {loading ? (
+          <p>Loading user data...</p>
+        ) : user ? (
+          <div>
+            <h2>User Details:</h2>
+            <pre>{JSON.stringify(user, null, 2)}</pre> {/* Pretty print user details */}
+          </div>
+        ) : (
+          <p>No user data available.</p>
+        )}
       </MainContent>
     </DashboardContainer>
   );

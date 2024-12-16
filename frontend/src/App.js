@@ -9,6 +9,7 @@ import styled from 'styled-components';
 import Dashboard from './pages/Dashboard';
 import Labs from './pages/Labs';
 
+
 const DashboardLayout = styled.div`
   display: flex;
   min-height: 100vh;

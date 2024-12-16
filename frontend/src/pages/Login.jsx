@@ -3,14 +3,30 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { auth } from './firebase';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
-import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
+import { useUser } from './UserContext';
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
+// Styled components
 const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+`;
+
+const PasswordToggle = styled.div`
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #4c669f;
+
+  &:hover {
+    color: #3b5998;
+  }
 `;
 
 const FormWrapper = styled.div`
@@ -114,43 +130,49 @@ const ErrorMessage = styled.div`
   text-align: center;
 `;
 
-const db = getFirestore();
-
+// Component logic
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [name, setName] = useState('');
   const [labId, setLabId] = useState('');
   const [isSignup, setIsSignup] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [focusedInput, setFocusedInput] = useState('');
+  const { setUser } = useUser();
+  const db = getFirestore();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-
     try {
+      let userCredential;
       if (isSignup) {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-        await setDoc(doc(db, "admins", user.uid), {
-          email: user.email,
-          password,
-          name,
-          labId,
-        });
-        navigate('/dashboard');
+        await setDoc(doc(db, "admins", user.uid), { email, password, name, labId });
+        setUser({ email, name, labId });
       } else {
-        await signInWithEmailAndPassword(auth, email, password);
-        navigate('/dashboard');
+        userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        const userDoc = await getDoc(doc(db, "admins", user.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          setUser({ email, ...userData });
+        } else {
+          setError('User data not found.');
+        }
       }
+      navigate('/dashboard');
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -198,7 +220,7 @@ const Login = () => {
             </InputGroup>
             <InputGroup>
               <Input
-                type="password"
+                type={isPasswordVisible ? 'text' : 'password'}
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -206,16 +228,16 @@ const Login = () => {
                 onFocus={() => setFocusedInput('password')}
                 onBlur={() => setFocusedInput('')}
               />
+              <PasswordToggle onClick={() => setIsPasswordVisible(!isPasswordVisible)}>
+                {isPasswordVisible ? <FaEyeSlash /> : <FaEye />}
+              </PasswordToggle>
             </InputGroup>
             {error && <ErrorMessage>{error}</ErrorMessage>}
             <Button type="submit" disabled={loading}>
               {loading ? 'Please wait...' : isSignup ? 'Create Account' : 'Sign In'}
             </Button>
           </Form>
-          <ToggleText onClick={() => {
-            setIsSignup(!isSignup);
-            setError('');
-          }}>
+          <ToggleText onClick={() => setIsSignup(!isSignup)}>
             {isSignup ? 'Already have an account? Sign in' : 'Need an account? Create one'}
           </ToggleText>
         </FormContainer>

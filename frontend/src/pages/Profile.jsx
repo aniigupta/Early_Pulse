@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useUser } from './UserContext';
 
 const Container = styled.div`
   padding: 2rem;
@@ -83,59 +84,53 @@ const Value = styled.p`
 `;
 
 const Profile = () => {
-  const userInfo = {
-    Name: "Aniket Gupta",
-    email: "Aniiigupta23@gmail.com",
-    role: "Administrator",
-    joinDate: "January 2024",
-    lastActive: "Today",
-    status: "Active"
-  };
+  const { user, loading } = useUser();
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <Container>
       <PageTitle>Profile</PageTitle>
       <ProfileCard>
         <ProfileHeader>
-          <Avatar>{userInfo.Name[0].toUpperCase()}</Avatar>
+          <Avatar>{user?.name[0].toUpperCase()}</Avatar>
           <h2 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '0.5rem' }}>
-            {userInfo.Name}
+            {user?.name}
           </h2>
-          <p style={{ opacity: '0.9' }}>{userInfo.role}</p>
+          <p style={{ opacity: '0.9' }}>{user?.role || 'Admin'}</p>
         </ProfileHeader>
-        
         <ProfileContent>
           <InfoSection>
             <InfoGrid>
               <InfoItem>
                 <Label>Email</Label>
-                <Value>{userInfo.email}</Value>
+                <Value>{user?.email}</Value>
               </InfoItem>
               <InfoItem>
                 <Label>Name</Label>
-                <Value>{userInfo.Name}</Value>
+                <Value>{user?.name}</Value>
               </InfoItem>
               <InfoItem>
-                <Label>Join Date</Label>
-                <Value>{userInfo.joinDate}</Value>
+                <Label>Lab ID</Label>
+                <Value>{user?.labId}</Value>
               </InfoItem>
               <InfoItem>
                 <Label>Last Active</Label>
-                <Value>{userInfo.lastActive}</Value>
+                <Value>{"Today"}</Value>
               </InfoItem>
               <InfoItem>
                 <Label>Status</Label>
-                <Value>{userInfo.status}</Value>
+                <Value>{"Active"}</Value>
               </InfoItem>
               <InfoItem>
                 <Label>Role</Label>
-                <Value>{userInfo.role}</Value>
+                <Value>{"ADMIN"}</Value>
               </InfoItem>
             </InfoGrid>
           </InfoSection>
         </ProfileContent>
       </ProfileCard>
-    </Container>
+    </Container> 
   );
 };
 
