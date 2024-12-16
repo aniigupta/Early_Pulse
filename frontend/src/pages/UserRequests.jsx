@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import { useUser } from './UserContext';
+import styled from 'styled-components';
 
-const UserRequests = ({ labId }) => {
+const UserRequests = ({ labId, onUserApproved }) => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [schedulerVisible, setSchedulerVisible] = useState(false);
+  const { user } = useUser();
 
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/appointments`);
+        const response = await fetch(`http://localhost:8081/api/appointments/lab/${user.labId}`);
         if (!response.ok) {
           throw new Error('Failed to fetch appointments');
         }
@@ -50,68 +53,63 @@ const UserRequests = ({ labId }) => {
 
   if (loading) {
     return (
-      <div style={styles.loadingContainer}>
-        <div style={styles.spinner}></div>
+      <LoadingContainer>
+        <Spinner />
         <p>Loading appointments...</p>
-      </div>
+      </LoadingContainer>
     );
   }
 
   if (error) {
     return (
-      <div style={styles.errorContainer}>
-        <div style={styles.errorIcon}>!</div>
-        <p style={styles.errorText}>Error: {error}</p>
-      </div>
+      <ErrorContainer>
+        <ErrorIcon>!</ErrorIcon>
+        <p>Error: {error}</p>
+        <RetryButton onClick={() => window.location.reload()}>Retry</RetryButton>
+      </ErrorContainer>
     );
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>Appointment Requests</h1>
-        <p style={styles.subtitle}>Manage incoming lab appointment requests</p>
-      </div>
+    <Container>
+      <Header>
+        <Title>Appointment Requests</Title>
+        <Subtitle>Manage incoming lab appointment requests</Subtitle>
+      </Header>
 
       {requests.length === 0 ? (
-        <div style={styles.emptyState}>
-          <div style={styles.emptyIcon}>📅</div>
-          <p style={styles.emptyText}>No pending appointments</p>
-        </div>
+        <EmptyState>
+          <EmptyIcon>📅</EmptyIcon>
+          <p>No pending appointments</p>
+        </EmptyState>
       ) : (
-        <div style={styles.cardGrid}>
+        <CardGrid>
           {requests.map((request) => (
-            <div key={request.id} style={styles.card}>
-              <div style={styles.cardHeader}>
-                <h3 style={styles.cardTitle}>{request.userName}</h3>
-              </div>
-              <div style={styles.cardContent}>
-                <div style={styles.infoRow}>
-                  <span style={styles.label}>📅 Appointment Date:</span>
-                  <span style={styles.value}>{request.appointmentDate || 'Pending'}</span>
-                </div>
-                <div style={styles.infoRow}>
-                  <span style={styles.label}>Status:</span>
-                  <span style={styles.value}>{request.status}</span>
-                </div>
-                <div style={styles.buttonContainer}>
-                  <button
-                    onClick={() => handleApprove(request.id)}
-                    style={styles.approveButton}
-                  >
+            <Card key={request.id}>
+              <CardHeader>
+                <CardTitle>{request.userName}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <InfoRow>
+                  <Label>📅 Appointment Date:</Label>
+                  <Value>{request.appointmentDate || 'Pending'}</Value>
+                </InfoRow>
+                <InfoRow>
+                  <Label>Status:</Label>
+                  <Value>{request.status}</Value>
+                </InfoRow>
+                <ButtonContainer>
+                  <ApproveButton onClick={() => handleApprove(request.id)}>
                     ✓ Approve
-                  </button>
-                  <button
-                    onClick={() => handleReject(request.id)}
-                    style={styles.rejectButton}
-                  >
+                  </ApproveButton>
+                  <RejectButton onClick={() => handleReject(request.id)}>
                     ✕ Reject
-                  </button>
-                </div>
-              </div>
-            </div>
+                  </RejectButton>
+                </ButtonContainer>
+              </CardContent>
+            </Card>
           ))}
-        </div>
+        </CardGrid>
       )}
 
       {schedulerVisible && (
@@ -121,247 +119,268 @@ const UserRequests = ({ labId }) => {
           onSchedule={handleSchedule}
         />
       )}
-    </div>
+    </Container>
   );
 };
 
 const SchedulerModal = ({ request, onClose, onSchedule }) => {
   const [appointmentTime, setAppointmentTime] = useState('');
+  const [error, setError] = useState('');
 
   const handleSave = () => {
-    if (appointmentTime) {
-      onSchedule(appointmentTime);
+    if (!appointmentTime) {
+      setError('Please select a valid appointment time.');
+      return;
     }
+    onSchedule(appointmentTime);
   };
 
   return (
-    <div style={styles.modalOverlay}>
-      <div style={styles.modal}>
+    <ModalOverlay>
+      <Modal>
         <h2>Schedule Appointment</h2>
         <p>Set a time for {request.userName}'s appointment:</p>
-        <input
+        <Input
           type="datetime-local"
           value={appointmentTime}
-          onChange={(e) => setAppointmentTime(e.target.value)}
-          style={styles.input}
+          onChange={(e) => {
+            setAppointmentTime(e.target.value);
+            setError('');
+          }}
         />
-        <div style={styles.modalActions}>
-          <button onClick={handleSave} style={styles.saveButton}>
-            Save
-          </button>
-          <button onClick={onClose} style={styles.cancelButton}>
-            Cancel
-          </button>
-        </div>
-      </div>
-    </div>
+        {error && <ErrorText>{error}</ErrorText>}
+        <ModalActions>
+          <SaveButton onClick={handleSave}>Save</SaveButton>
+          <CancelButton onClick={onClose}>Cancel</CancelButton>
+        </ModalActions>
+      </Modal>
+    </ModalOverlay>
   );
 };
 
-const styles = {
-  // Add the styles defined earlier and the following new styles
-  modalOverlay: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  modal: {
-    backgroundColor: '#fff',
-    padding: '24px',
-    borderRadius: '12px',
-    width: '400px',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-    textAlign: 'center',
-  },
-  input: {
-    width: '100%',
-    padding: '8px',
-    margin: '16px 0',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-    fontSize: '16px',
-  },
-  modalActions: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    marginTop: '16px',
-  },
-  saveButton: {
-    padding: '10px 20px',
-    backgroundColor: '#34c759',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-  },
-  cancelButton: {
-    padding: '10px 20px',
-    backgroundColor: '#ff3b30',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-  },
-  container: {
-    padding: '32px',
-    maxWidth: '1200px',
-    margin: '0 auto',
-  },
-  header: {
-    marginBottom: '32px',
-  },
-  title: {
-    fontSize: '32px',
-    fontWeight: '600',
-    color: '#1a1a1a',
-    marginBottom: '8px',
-  },
-  subtitle: {
-    fontSize: '16px',
-    color: '#666',
-    margin: 0,
-  },
-  cardGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-    gap: '24px',
-  },
-  card: {
-    backgroundColor: '#ffffff',
-    borderRadius: '12px',
-    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-    transition: 'transform 0.2s, box-shadow 0.2s',
-    overflow: 'hidden',
-  },
-  cardHeader: {
-    padding: '20px',
-    backgroundColor: '#f8f9fa',
-    borderBottom: '1px solid #eee',
-  },
-  cardTitle: {
-    margin: 0,
-    fontSize: '18px',
-    fontWeight: '600',
-    color: '#2c3e50',
-  },
-  cardContent: {
-    padding: '20px',
-  },
-  infoRow: {
-    display: 'flex',
-    flexDirection: 'column',
-    marginBottom: '16px',
-  },
-  label: {
-    fontSize: '14px',
-    color: '#666',
-    marginBottom: '4px',
-  },
-  value: {
-    fontSize: '15px',
-    color: '#2c3e50',
-  },
-  buttonContainer: {
-    display: 'flex',
-    gap: '12px',
-    marginTop: '20px',
-  },
-  approveButton: {
-    flex: 1,
-    padding: '10px',
-    border: 'none',
-    borderRadius: '6px',
-    backgroundColor: '#34c759',
-    color: 'white',
-    fontSize: '14px',
-    fontWeight: '500',
-    cursor: 'pointer',
-    transition: 'background-color 0.2s',
-  },
-  rejectButton: {
-    flex: 1,
-    padding: '10px',
-    border: 'none',
-    borderRadius: '6px',
-    backgroundColor: '#ff3b30',
-    color: 'white',
-    fontSize: '14px',
-    fontWeight: '500',
-    cursor: 'pointer',
-    transition: 'background-color 0.2s',
-  },
-  loadingContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: '400px',
-  },
-  spinner: {
-    width: '40px',
-    height: '40px',
-    border: '4px solid #f3f3f3',
-    borderTop: '4px solid #3498db',
-    borderRadius: '50%',
-    animation: 'spin 1s linear infinite',
-  },
-  errorContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: '400px',
-  },
-  errorIcon: {
-    width: '60px',
-    height: '60px',
-    borderRadius: '50%',
-    backgroundColor: '#ff3b30',
-    color: 'white',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '32px',
-    marginBottom: '16px',
-  },
-  errorText: {
-    color: '#ff3b30',
-    fontSize: '18px',
-    textAlign: 'center',
-  },
-  emptyState: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: '300px',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '12px',
-    padding: '32px',
-  },
-  emptyIcon: {
-    fontSize: '48px',
-    marginBottom: '16px',
-  },
-  emptyText: {
-    fontSize: '18px',
-    color: '#666',
-    margin: 0,
-  },
-};
-const styleSheet = document.createElement('style');
-styleSheet.textContent = `
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
+// Styled Components
+const Container = styled.div`
+  padding: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
 `;
-document.head.appendChild(styleSheet);
+
+const Header = styled.div`
+  margin-bottom: 32px;
+`;
+
+const Title = styled.h1`
+  font-size: 32px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+`;
+
+const Subtitle = styled.p`
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+`;
+
+const CardGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+`;
+
+const Card = styled.div`
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  overflow: hidden;
+`;
+
+const CardHeader = styled.div`
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #eee;
+`;
+
+const CardTitle = styled.h3`
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+`;
+
+const CardContent = styled.div`
+  padding: 20px;
+`;
+
+const InfoRow = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+`;
+
+const Label = styled.span`
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 4px;
+`;
+
+const Value = styled.span`
+  font-size: 15px;
+  color: #2c3e50;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+`;
+
+const ApproveButton = styled.button`
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  background-color: #34c759;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+`;
+
+const RejectButton = styled.button`
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  background-color: #ff3b30;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+`;
+
+const LoadingContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+`;
+
+const Spinner = styled.div`
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+`;
+
+const ErrorContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+`;
+
+const ErrorIcon = styled.div`
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #ff3b30;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  margin-bottom: 16px;
+`;
+
+const RetryButton = styled.button`
+  padding: 10px 20px;
+  background-color: #34c759;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+`;
+
+const EmptyState = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  padding: 32px;
+`;
+
+const EmptyIcon = styled.div`
+  font-size: 48px;
+  margin-bottom: 16px;
+`;
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Modal = styled.div`
+  background-color: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  width: 400px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-align: center;
+`;
+
+const Input = styled.input`
+  width: 100%;
+  padding: 8px;
+  margin: 16px 0;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+`;
+
+const ErrorText = styled.p`
+  color: #ff3b30;
+`;
+
+const ModalActions = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+`;
+
+const SaveButton = styled.button`
+  padding: 10px 20px;
+  background-color: #34c759;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+`;
+
+const CancelButton = styled.button`
+  padding: 10px 20px;
+  background-color: #ff3b30;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+`;
 
 export default UserRequests;

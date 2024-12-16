@@ -167,7 +167,7 @@ const Login = () => {
           setError('User data not found.');
         }
       }
-      navigate('/dashboard');
+      navigate('/profile');
     } catch (err) {
       setError(err.message);
     } finally {
