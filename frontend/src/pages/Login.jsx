@@ -147,11 +147,11 @@ const Login = () => {
   const navigate = useNavigate();
 
 
-  useEffect(() => {
-    if (user) {
-      navigate('/dashboard'); // Redirect to dashboard if user is logged in
-    }
-  }, [user, navigate]);
+  // useEffect(() => {
+  //   if (user) {
+  //     navigate('/dashboard'); // Redirect to dashboard if user is logged in
+  //   }
+  // }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

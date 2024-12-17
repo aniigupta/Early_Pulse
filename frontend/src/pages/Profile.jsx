@@ -95,9 +95,8 @@ const Profile = () => {
         <ProfileHeader>
           <Avatar>{user?.name[0].toUpperCase()}</Avatar>
           <h2 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '0.5rem' }}>
-            {user?.name}
+            {user?.name.toUpperCase()}
           </h2>
-          <p style={{ opacity: '0.9' }}>{user?.role || 'Admin'}</p>
         </ProfileHeader>
         <ProfileContent>
           <InfoSection>
